@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+:root {
+    --border-color: #000;
+    --border-width: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    text-align: center;
+}
+
+input[type=checkbox] {
+    display: none;
+}
+
+button {
+    margin-top: 1rem;
+    font-weight: bold;
+    background-color: #e92323;
+    color: white;
+    font-size: 1.75rem;
+    padding: 0.5rem 4rem;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    border-color: 1px solid #e93434;
+    box-shadow: 4px 4px 0px black;
+
+    &:hover {
+        background-color: #ed8282;
+        box-shadow: 4px 4px 0px #000b;
+    }
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 80vmin;
+    height: 80vmin;
+    border: var(--border-width) solid var(--border-color);
+}
+
+svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    pointer-events: none;
+}
+
+path {
+    stroke: red;
+    stroke-width: 4;
+    stroke-linecap: round;
+    display: none;
+}
+
+.row {
+    display: flex;
+    flex: 1 1;
+}
+
+/* Place X/O */
+[id^=q] {
+    display: flex;
+    flex: 1 1;
+    border: var(--border-width) solid var(--border-color);
+    user-select: none;
+    font-size: calc(15vmin);
+
+    &>[id^=c] {
+        margin: auto;
+        opacity: 0;
+        cursor: pointer;
+        &:hover {
+            opacity: 0.2;
+        }
+    }
+}
+
+#ix00:checked ~ * #q00,
+#ix10:checked ~ * #q10,
+#ix20:checked ~ * #q20,
+#ix01:checked ~ * #q01,
+#ix11:checked ~ * #q11,
+#ix21:checked ~ * #q21,
+#ix02:checked ~ * #q02,
+#ix12:checked ~ * #q12,
+#ix22:checked ~ * #q22
+{
+    label {display: none}
+    &::before {
+        margin: auto;
+        content: 'X';
+    }
+}
+
+#io00:checked ~ * #q00,
+#io10:checked ~ * #q10,
+#io20:checked ~ * #q20,
+#io01:checked ~ * #q01,
+#io11:checked ~ * #q11,
+#io21:checked ~ * #q21,
+#io02:checked ~ * #q02,
+#io12:checked ~ * #q12,
+#io22:checked ~ * #q22
+{
+    label {display: none}
+    &::before {
+        margin: auto;
+        content: 'O';
+    }
+}
+
+/* Toggle player turn */
+[id^=cx] {display: flex}
+[id^=co] {display: none}
+
+:checked {
+    &~ * [id^=cx] {display: none}
+    &~ * [id^=co] {display: flex}
+}
+
+:checked ~ :checked {
+    &~ * [id^=cx] {display: flex}
+    &~ * [id^=co] {display: none}
+}
+
+:checked ~ :checked ~ :checked {
+    &~ * [id^=cx] {display: none}
+    &~ * [id^=co] {display: flex}
+}
+
+:checked ~ :checked ~ :checked ~ :checked {
+    &~ * [id^=cx] {display: flex}
+    &~ * [id^=co] {display: none}
+}
+
+:checked ~ :checked ~ :checked~ :checked ~ :checked {
+    &~ * [id^=cx] {display: none}
+    &~ * [id^=co] {display: flex}
+}
+
+:checked ~ :checked ~ :checked ~ :checked~ :checked ~ :checked {
+    &~ * [id^=cx] {display: flex}
+    &~ * [id^=co] {display: none}
+}
+
+:checked ~ :checked ~ :checked~ :checked ~ :checked~ :checked ~ :checked {
+    &~ * [id^=cx] {display: none}
+    &~ * [id^=co] {display: flex}
+}
+
+:checked ~ :checked ~ :checked ~ :checked~ :checked ~ :checked~ :checked ~ :checked {
+    &~ * [id^=cx] {display: flex}
+    &~ * [id^=co] {display: none}
+}
+
+/* Win conditions */
+#ix00:checked ~ #ix10:checked ~ #ix20:checked,
+#io00:checked ~ #io10:checked ~ #io20:checked {
+    &~ * #lr1{display: block}
+    &~ * label{display: none}
+}
+#ix01:checked ~ #ix11:checked ~ #ix21:checked,
+#io01:checked ~ #io11:checked ~ #io21:checked {
+    &~ * #lr2{display: block}
+    &~ * label{display: none}
+}
+#ix02:checked ~ #ix12:checked ~ #ix22:checked,
+#io02:checked ~ #io12:checked ~ #io22:checked {
+    &~ * #lr3{display: block}
+    &~ * label{display: none}
+}
+#ix00:checked ~ #ix01:checked ~ #ix02:checked,
+#io00:checked ~ #io01:checked ~ #io02:checked {
+    &~ * #lc1{display: block}
+    &~ * label{display: none}
+}
+#ix10:checked ~ #ix11:checked ~ #ix12:checked,
+#io10:checked ~ #io11:checked ~ #io12:checked {
+    &~ * #lc2{display: block}
+    &~ * label{display: none}
+}
+#ix20:checked ~ #ix21:checked ~ #ix22:checked,
+#io20:checked ~ #io21:checked ~ #io22:checked {
+    &~ * #lc3{display: block}
+    &~ * label{display: none}
+}
+#ix00:checked ~ #ix11:checked ~ #ix22:checked,
+#io00:checked ~ #io11:checked ~ #io22:checked {
+    &~ * #ld1{display: block}
+    &~ * label{display: none}
+}
+#ix20:checked ~ #ix11:checked ~ #ix02:checked,
+#io20:checked ~ #io11:checked ~ #io02:checked {
+    &~ * #ld2{display: block}
+    &~ * label{display: none}
+}
+    </style>
+</head>
+<body>
+    <form>
+        <input type="checkbox" id="ix00">
+        <input type="checkbox" id="ix10">
+        <input type="checkbox" id="ix20">
+        <input type="checkbox" id="ix01">
+        <input type="checkbox" id="ix11">
+        <input type="checkbox" id="ix21">
+        <input type="checkbox" id="ix02">
+        <input type="checkbox" id="ix12">
+        <input type="checkbox" id="ix22">
+
+        <input type="checkbox" id="io00">
+        <input type="checkbox" id="io10">
+        <input type="checkbox" id="io20">
+        <input type="checkbox" id="io01">
+        <input type="checkbox" id="io11">
+        <input type="checkbox" id="io21">
+        <input type="checkbox" id="io02">
+        <input type="checkbox" id="io12">
+        <input type="checkbox" id="io22">
+
+        <div class="board">
+            <div class="row">
+                <div id="q00">
+                    <label for="ix00" id="cx00">X</label>
+                    <label for="io00" id="co00">O</label>
+                </div>
+                <div id="q10">
+                    <label for="ix10" id="cx10">X</label>
+                    <label for="io10" id="co10">O</label>
+                </div>
+                <div id="q20">
+                    <label for="ix20" id="cx20">X</label>
+                    <label for="io20" id="co20">O</label>
+                </div>
+            </div>
+            <div class="row">
+                <div id="q01">
+                    <label for="ix01" id="cx01">X</label>
+                    <label for="io01" id="co01">O</label>
+                </div>
+                <div id="q11">
+                    <label for="ix11" id="cx11">X</label>
+                    <label for="io11" id="co11">O</label>
+                </div>
+                <div id="q21">
+                    <label for="ix21" id="cx21">X</label>
+                    <label for="io21" id="co21">O</label>
+                </div>
+            </div>
+            <div class="row">
+                <div id="q02">
+                    <label for="ix02" id="cx02">X</label>
+                    <label for="io02" id="co02">O</label>
+                </div>
+                <div id="q12">
+                    <label for="ix12" id="cx12">X</label>
+                    <label for="io12" id="co12">O</label>
+                </div>
+                <div id="q22">
+                    <label for="ix22" id="cx22">X</label>
+                    <label for="io22" id="co22">O</label>
+                </div>
+            </div>
+            <svg viewbox="0 0 300 300">
+                <path id="lr1" d="M50,50 L250,50" />
+                <path id="lr2" d="M50,150 L250,150" />
+                <path id="lr3" d="M50,250 L250,250" />
+                <path id="lc1" d="M50,50 L50,250" />
+                <path id="lc2" d="M150,50 L150,250" />
+                <path id="lc3" d="M250,50 L250,250" />
+                <path id="ld1" d="M50,50 L250,250" />
+                <path id="ld2" d="M250,50 L50,250" />
+            </svg>
+        </div>
+
+        <button type="reset">RESET</button>
+    </form>
+</body>
+</html>
